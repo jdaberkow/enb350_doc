@@ -1,0 +1,52 @@
+\documentclass[11pt,parskip=full,a4paper,titlepage,oneside,bibliography=totocnumbered]{scrreprt}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{siunitx}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{scrpage2}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=3cm]{geometry}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{wrapfig}
+\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{float}
+
+\usepackage{helvet}
+\usepackage{charter}
+%\usepackage{lmodern}
+
+\lstset{belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily\color{gray},
+  escapeinside={(*@}{@*)},}
+
+
+\renewcommand*{\chapterformat}
+
+
+
+\author{Julian Daberkow}
+\title{PLATZHALTER - TITEL}
+
+\date{\today}
+
+\begin{document}
+\include{00_title}
+\tableofcontents
+\listoffigures
+\listoftables
+\include{01_introduction}
+\include{02_implementation}
+\include{03_results}
+\appendix
+\include{A1_references}
+\include{A2_appendix}
+\end{document}
