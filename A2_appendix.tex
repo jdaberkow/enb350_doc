@@ -1,7 +1,68 @@
 \chapter{Appendix}
 
-(1 page)\\
-* Mention the name of the hardware development platform and versions of the tools used such as Code Composer Studio, Tivaware, RTOS etc.
+\section{Project Structure}
+
+\begin{figure}[H]
+	\begin{center}
+		\tikzstyle{every node}=[draw=black,thick,anchor=west]
+		\tikzstyle{selected}=[draw=red,fill=red!30]
+		\tikzstyle{optional}=[dashed,fill=gray!50]
+		\begin{tikzpicture}[%
+		grow via three points={one child at (0.5,-0.7) and
+			two children at (0.5,-0.7) and (0.5,-1.4)},
+		edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}]
+		\node [optional]{enb350}
+		child { node [optional]{drivers}
+			child { node {frame.c}}				
+			child { node {frame.h}}				
+			child { node {kentec320x240x16\_ssd2119.c}}				
+			child { node {kentec320x240x16\_ssd2119.h}}				
+			child { node {mx66l51235f.c}}				
+			child { node {mx66l51235f.h}}				
+			child { node {pinout.c}}				
+			child { node {pinout.h}}				
+			child { node {touch.c}}				
+			child { node {touch.h}}
+		}		
+		child [missing] {}				
+		child [missing] {}				
+		child [missing] {}				
+		child [missing] {}				
+		child [missing] {}	
+		child [missing] {}			
+		child [missing] {}				
+		child [missing] {}				
+		child [missing] {}				
+		child [missing] {}	
+		child { node [optional]{targetConfigs}
+			child { node {Tiva TM4C129XNCZAD.ccxml}}				
+			child { node {readme.txt}}	
+		}	
+		child [missing] {}	
+		child [missing] {}
+		child { node [optional]{utils}			
+			child { node {...}}
+		}
+		child [missing] {}
+		child { node {.ccsproject}}				
+		child { node {.cproject}}				
+		child { node {.project}}				
+		child { node {TM4C129XNCZAD.lds}}				
+		child { node {app.cfg}}				
+		child { node {driverLib.c}}				
+		child { node {driverLib.h}}				
+		child { node {main.c}}				
+		child { node {qut\_tiva.h}}				
+		child { node {screen.c}}				
+		child { node {screen.h}};
+		\end{tikzpicture}
+		\caption{Project Folder and Files}
+		\label{fig:filesAndFolders}
+	\end{center}
+\end{figure}
+
+
+\section{Tools and Platforms} %(1 page)\\
 
 \begin{table}[H]
 	\begin{tabularx}{\textwidth}{l | X}
