@@ -24,18 +24,57 @@
 \end{figure}
 
 \section{Device Driver Library} %TODO: Timo
-* Did you use the GPIO module? How? Through the qut library... Pin Map table?\\
-* Did you use the ADC? How? 
+%* Did you use the GPIO module? How? Through the qut library... Pin Map table?\\
+%* Did you use the ADC? How? 
 
-% TODO: Table of measurements?
+% - movement bool for disable / enable movement by user
+% - material struct
+
+The device driver library (\textit{driverLib.h}) is providing high level functions to access the sensors and actuators of the Festo testing station. 
+It uses functions of the \textit{qut\_tiva.h}-file for pin access to the station. 
+Therefore the \textit{qut\_set\_gpio()}-function is used to change the output pins that are attached to the actuators of the station. The states of the sensors are read using the \textit{qut\_get\_gpio()}-function. In order to get the value of the analogue height sensor a Analogue-to-Digital Converter (ADC) is used. It gets initialized by \textit{QUT\_ADC0\_Init()} and afterwards the raw value of the sensor can be read and converted by the ADC through the \textit{QUT\_ADC0\_Read()}-function. 
+
+In the \textit{driverLib.h}-file a \textit{ColorMaterial} struct is introduced that consists of two bool-values for the attribute \glq metallic\grq and \glq black\grq. This stuct is filled with the current data of the sensors and returned by the \textit{getMaterial()}-function of the library.\\
+
+The library holds a bool value that is \textit{true} as long as the movement is enabled. If this value is set to \textit{false} the call of every function that controls one of the actuators will not perform and therefore return false since the aim cannot be reached. The value can be changed by the user or in some stages of the state machine. 
+The function set provided by the library and their behaviours are described in the following: 
+
+\begin{description} 
+	\item[init()] In the \textit{init()}-function the Event\_Handle and all datatypes are initialized. 
+	\item[initStation()] It makes sure that the station will be in the initial position afterwards. The platform will be in lowered position and the ejector will be retracted. Other movement functions of the library are used to achieve this aim.
+	\item[movePlatform(bool up, bool secureMovement)] This function moves the platform in the lowered or raised position depending on the given parameter. If the secure movement is enabled the movement of the platform will not be triggered before the security barrier is free. 
+	\item[controlEjector(bool extend, bool secureMovement)] The ejector of the station will be extended or retracted depending on the given parameter. If the secure movement is enabled the movement of the ejector will not be triggered before the security barrier is free. 
+	\item[controlAirSlider(bool enable)] Depending on the given bool value the air slider will be activated or deactivated.
+	\item[toggleEnableMovement()] It toggles the state of the movement enable bool. If the movement is going to be disabled then all pins of the actuators are set to 0 to stop every movement of the station.
+	\item[enableMovement(bool enable)] Sets the state of the movement enable bool to the given parameter value. If the movement is going to be disabled then all pins of the actuators are set to 0 to stop every movement of the station.
+	\item[senseWorkpiece()] Returns if there is current a workpiece in the platform or not.
+	\item[senseSafetyBarrierClear()] Returns if the safety barrier is clear or if something is in between it.
+	\item[getRawWorkpieceHeight()] Returns the raw value of the ADC that is attached to the height sensor of the station. 
+	\item[getWorkpieceHeight(float slope, float offset)] Returns the height of the current workpiece in $10^{-1}$mm based on the given slope, offset and the raw value of the ADC.
+	\item[getMaterial()] Returns a \textit{ColorMaterial}-struct that includes the current measurement of the color and the metallic value of the workpiece.
+\end{description}
+
+The functions are designed to be blocking until the desired movement or action is fulfilled. For example the \text{movePlatform(..)}-function waits until the platform is in the correct position and returns true afterwards. It would also be possible to design functions that just triggers a certain movement, but then another function that inspects the state of the movement has to be called by the state machine in order to know when the action ended. For the design of the state machine the used approach of blocking functions is more suitable. \\
+
+In the following the blocking behaviour is explained on the example of the \textit{movePlatform(bool up, bool secureMovement)}-function (See fig. \ref{fig:moveplatform}): \\
+As parameters two bool values are passed to the function call. They specify if the platform should move into the raised or the lowered position and if the secure movement should be enabled. 
+First it will be checked, if the platform is already in the desired position. In this case the function will return \textit{true} immediately. Otherwise the next step is to check if the movement is current enabled. If it is disabled then \textit{false} will be returned. In this case the function is not blocking until the desired position is reached because it cannot be determined if the movement will ever be enabled again and also the state of the station after the movement was disabled it not clear.
+The next step is to check if the safety barrier is clear. If this is not the case it will be waited until it is clear. Therefore the task will sleep for a certain moment to give computation to the other running tasks and stay in a while loop. This check can be bypassed if the secure movement option is disabled by the parameter. That is useful when the \textit{initStation()}-function is called, because the platform itself might be in between the safety barrier and it would get stuck in the while loop since the safety barrier will never be clear.
+Afterwards the movement of the platform is started. Therefore the pin for the valve to perform the correct movement is set to 1. 
+Afterwards the function will enter into a while-loop. If the movement gets disabled while this function is waiting for the platform to reach the new position \textit{false} will be returned since the platform will not move any further if the movement is disabled. In every iteration of the loop it will be checked if the event that is specified for reaching the movement is posted or not. If it was posted \textit{true} will be returned. Otherwise the task will sleep for a certain moment before performing the next iteration.\\
+When the platform finally reaches the raised or the lowered position a hardware interrupt will be triggered by the GPIO that is specified for the corresponding pin. In the ISR the movement of the station will be stopped immediately and the event that the movement is finished will be posted. The stopping of the movement is a time critical action and therefore has to be performed in the ISR. 
+
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[scale=.40]{media/Flow_Chart_MovePlatform.png} 	
-		\caption{Flow Chart Move Platform}
+		\includegraphics[width=0.6\textwidth]{media/Flow_Chart_MovePlatform.pdf} 	
+		\caption{Flowchart Move Platform}
 		\label{fig:moveplatform}
 	\end{center}
 \end{figure}
+
+
+% TODO: Table of measurements?
 
 \section{User Interface} %TODO: Pixel-Julian
 * Did you use the graphics library? How?\\
