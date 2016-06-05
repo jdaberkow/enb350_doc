@@ -1,19 +1,19 @@
 \chapter{Design and Implementation}
 
 (approx. 10 pages)\\
-* Approach to design\\
-* important issues and choices and their relationships to theoretical concepts and the hardware and software platforms\\
-* You can use one subsection for the driver and another for the data logger.\\
 
 * Check if you have addressed Provided a graphical representation for your design?\\
 * Provided a Project folders and files diagram?\\
-* Did you use the GPIO module? How?\\
-* Did you use the graphics library? How?\\
-* Did you use interrupts? How?\\
+
+\section{Program Design and Interaction Mechanisms} %TODO: Everybody, yeaahhhh ;)
+* Approach to design\\
+* important issues and choices and their relationships to theoretical concepts and the hardware and software platforms\\
+* Did you use the GPIO module? How? In terms of interrupts and the setup in the main\\
+* Did you use interrupts? How?\\ 
 * Did you use multiple threads / handlers? How? Why?\\
-* Did you use the ADC? How? Did you use TI-RTOS? How?
+* Did you use TI-RTOS? How?\\
 
-
+\section{Main Functions and State Machine} %TODO: Hendrik
 
 \begin{figure}[H]
 	\begin{center}
@@ -23,7 +23,11 @@
 	\end{center}
 \end{figure}
 
+\section{Device Driver Library} %TODO: Timo
+* Did you use the GPIO module? How? Through the qut library... Pin Map table?\\
+* Did you use the ADC? How? 
 
+% TODO: Table of measurements?
 
 \begin{figure}[H]
 	\begin{center}
@@ -32,3 +36,9 @@
 		\label{fig:moveplatform}
 	\end{center}
 \end{figure}
+
+\section{User Interface} %TODO: Pixel-Julian
+* Did you use the graphics library? How?\\
+
+
+
