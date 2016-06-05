@@ -1,5 +1,6 @@
 \begin{thebibliography}{9}
 
+%TODO: Delete this first entry
 \bibitem[WhatToDo]{WhatToDo:2016} including vendor supplied technical documents with a table that links each document to sub-sections of your report where they are relevant with entries: the reference number, the sub- section number, topic keyword or keywords, the pages that were found useful.
 
 \bibitem[TI-RTOS]{TI-RTOS}
@@ -20,8 +21,20 @@ Festo Didactic Catalogue (2014), Festo Didactic Gmbh \& Co. KG, pp. 290-291, 201
  
 \end{thebibliography}
 
-\begin{tabular}[width=pagewidth]{|l | l | l |}
-	\hline
-	Document & Report Sub-Section & Keyword \\
-	\hline
-\end{tabular}
+\begin{table}[H]
+	\begin{tabularx}{\textwidth}{l | l | X}
+		Document & Report (Sub-)Section & Keyword \\
+		\hline
+		TI-RTOS & \ref{ch:Introduction} & Heureka\\
+		\hline
+		SYS/BIOS & & \\
+		\hline
+		Tive Graphics & & \\
+		\hline
+		Wilson13 & & \\	
+	\end{tabularx}
+	\caption{Bibliography Links}
+	\label{tab:BibliographyLinks}
+\end{table}
+
+\vfill
