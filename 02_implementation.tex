@@ -1,12 +1,13 @@
 \chapter{Design and Implementation} %(approx. 10 pages)\\
 
-\section{Program Design and Interaction Mechanisms} %TODO: Everybody, yeaahhhh ;)
+\section{Program Design and Interaction Mechanisms} %TODO: Julian
 * Approach to design\\
 * important issues and choices and their relationships to theoretical concepts and the hardware and software platforms\\
 * Did you use the GPIO module? How? In terms of interrupts and the setup in the main\\
 * Did you use interrupts? How?\\ 
 * Did you use multiple threads / handlers? How? Why?\\
 * Did you use TI-RTOS? How?\\
+%TODO: Please add some references to the documents from the bibliography and add them in the table there as well.
 
 \section{State Machine} %TODO: Hendrik
 To control the program flow, state machines are a suitable approach for real-time software (Lecture 2). They allow design for multi-threaded software and real-time events can be used to cause state changes. By implementing the state machine in one task, concurrency with other parts of the software is no problem because the state machine task can sleep between iterations and change its state based on events or the result values of methods called from inside the states. Even though they can not depict time constraints in every case. Tasks which are time critical should not be implemented or called inside a specific state to ensure real-time responses.
@@ -59,7 +60,7 @@ The function set provided by the library and their behaviours are described in t
 	\item[getMaterial()] Returns a \texttt{ColorMaterial}-struct that includes the current measurement of the color and the metallic value of the workpiece.
 \end{description}
 
-The functions are designed to be blocking until the desired movement or action is fulfilled. For example the \text{movePlatform(..)}-function waits until the platform is in the correct position and returns true afterwards. It would also be possible to design functions that just triggers a certain movement, but then another function that inspects the state of the movement has to be called by the state machine in order to know when the action ended. For the design of the state machine the used approach of blocking functions is more suitable. \\
+The functions are designed to be blocking until the desired movement or action is fulfilled. For example the \text{movePlatform(..)}-function waits until the platform is in the correct position and returns true afterwards. It would also be possible to design functions that just trigger a certain movement, but then another function that inspects the state of the movement has to be called by the state machine in order to know when the action ended. For the design of the state machine the used approach of blocking functions is more suitable. \\
 
 In the following the blocking behaviour is explained on the example of the \texttt{movePlatform(bool up, bool secureMovement)}-function (See fig. \ref{fig:moveplatform}): \\
 As parameters two bool values are passed to the function call. They specify if the platform should move into the raised or the lowered position and if the secure movement should be enabled. 
@@ -67,7 +68,8 @@ First it will be checked, if the platform is already in the desired position. In
 The next step is to check if the safety barrier is clear. If this is not the case it will be waited until it is clear. Therefore the task will sleep for a certain moment to give computation to the other running tasks and stay in a while loop. This check can be bypassed if the secure movement option is disabled by the parameter. That is useful when the \texttt{initStation()}-function is called, because the platform itself might be in between the safety barrier and it would get stuck in the while loop since the safety barrier will never be clear.
 Afterwards the movement of the platform is started. Therefore the pin for the valve to perform the correct movement is set to 1. 
 Afterwards the function will enter into a while-loop. If the movement gets disabled while this function is waiting for the platform to reach the new position \texttt{false} will be returned since the platform will not move any further if the movement is disabled. In every iteration of the loop it will be checked if the event that is specified for reaching the movement is posted or not. If it was posted \texttt{true} will be returned. Otherwise the task will sleep for a certain moment before performing the next iteration.\\
-When the platform finally reaches the raised or the lowered position a hardware interrupt will be triggered by the GPIO that is specified for the corresponding pin. In the ISR the movement of the station will be stopped immediately and the event that the movement is finished will be posted. The stopping of the movement is a time critical action and therefore has to be performed in the ISR. 
+When the platform finally reaches the raised or the lowered position a hardware interrupt will be triggered by the GPIO that is specified for the corresponding pin.%TODO: Maybe add a reference to the documents from the bibliography and add it into the table.
+ In the ISR the movement of the station will be stopped immediately and the event that the movement is finished will be posted. The stopping of the movement is a time critical action and therefore has to be performed in the ISR. 
 
 
 \begin{figure}[H]
@@ -144,7 +146,8 @@ There are three different screen states while each one of them is allowing the u
 The first display state shown in figure \ref{fig:guiStatus} is the status screen.
 It shows all the values of the last measured workpiece and furthermore a summary of all the measured workpieces in total.
 In addition, the total runtime and the current flow-rate are displayed.
-While this screen is active, the two buttons on the left allow for switching into another screen state, while the button on the right starts and stops the automation process of the measuring.
+While this screen is active, the two buttons on the left allow for %TODO: delete for?
+ switching into another screen state, while the button on the right starts and stops the automation process of the measuring. %TODO: I would write testing instead of measuring
 
 When the user goes into the calibration mode, the current values and the summary disappear and he is then asked to enter the height for the workpieces that will be used for calibration, as shown in figure \ref{fig:guiCalibrate}.
 In this screen the buttons on the left are either used to switch again into another screen state or to adjust the calibration values.
@@ -160,3 +163,4 @@ At first the screen is cleared by painting a rectangle with the color of the bac
 Afterwards a distinction of cases decides which screen is to be drawn.
 With help of the functions \texttt{GrStringDraw} and \texttt{GrStringDrawCentered}  by the \textit{TivaWare™ Graphics Library} the strings will then be printed at the appropriate coordinates. 
 Additionally the rectangles are drawn with the help of the \texttt{GrRectDraw} function.
+%TODO: If possible please refer to the documents from the bibliography and add some section and keywords to the table.

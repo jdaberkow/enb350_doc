@@ -1,7 +1,7 @@
 \chapter{Introduction} \label{ch:Introduction} % (2 pages)
 
 \section{Problem Statement} \label{sec:ProblemStatement}
-In a production line, different work pieces have be checked in the beginning to make sure only work pieces which meet all requirements are further processed. Therefore a MPS testing station of the vendor Festo is used, which provides a set of sensors and work piece handling components (see Fig.\ref{fig:festostation}). The sensors and actuators of the station are connected to the GPIO Pins of the micro-controller of the Tiva Development Kit DK-TM4C129X. This allows controlling the actuators (activation or deactivation) and reading sensor values.
+In a production line, different work pieces have be checked in the beginning to make sure only work pieces which meet all requirements are further processed. Therefore a MPS testing station of the vendor Festo is used, which provides a set of sensors and work piece handling components / actuators (see Fig.\ref{fig:festostation}). The sensors and actuators of the station are connected to the GPIO Pins of the micro-controller of the \textit{Tiva Development Kit DK-TM4C129X}. This allows controlling the actuators (activation or deactivation) and reading sensor values.
 
 \begin{figure}[H]
 	\begin{center}
@@ -17,7 +17,7 @@ The testing process is structured into the following steps:
 	\item Color and material is sensed with the related sensors in this position(see Fig. \ref{fig:festostationsensorsandejector} and Fig.\ref{fig:festostationcolorandmaterialsensor}).
 	\item A safety light barrier is used to ensure that the hands of the operator of the station are not in the zone of the moving parts any more.
 	\item The platform is moved up (see Fig.\ref{fig:festostationliftingmodule}).
-	\item In the top position a height measurement is executed (see Fig.\ref{fig:festostationheightmeasurement}).
+	\item In the top position a height measurement is triggered (see Fig.\ref{fig:festostationheightmeasurement}).
 	\item Based on the height measurement a work piece is accepted within certain thresholds or rejected if beyond.
 	\item If the work piece is accepted the following steps are executed:
 	\begin{enumerate}
