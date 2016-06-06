@@ -196,4 +196,61 @@ With the slope and y-intercept the actual height of work pieces can be computed 
 	\end{center}
 \end{figure}
 
-In addition to this a series of data was recorded to determine how precise the height sensor is and how accurate the output of the function is. 
+In addition to this a series of data was recorded to determine how precise the height sensor is and how accurate the output of the function is. One work piece of the height 225*$10^{-1}$mm and one with the height of 275*$10^{-1}$mm were measured five times with the height sensor. Afterwards the function that describes the proportion between the measured value and the actual height was computed and is shown in Figure \ref{fig:heightfunction}. The measurements of the work pieces and the computed height of them are shown in table \ref{tab:225workpiece} and table \ref{tab:275workpiece}.
+As one can see the computed heights are in a certain range to the actual height of the work piece. Since this deviations are smaller then 1*$10^{-1}$mm the approach was chosen to only measure the work pieces once instead of several times. 
+
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{media/Measurements_Height_Sensor.pdf} 	
+		\caption{Height Function}
+		\label{fig:heightfunction}
+	\end{center}
+\end{figure}
+
+\begin{minipage}{0.5\textwidth}
+\begin{table}[H]
+	\begin{center}
+		\begin{tabu} spread \linewidth {c | c}
+			\textbf{Value} & \textbf{Computed height [ $10^{-1}$mm]} \\
+			\hline
+			\hline
+			1798 & 225.1\\
+			\hline
+			1794 & 224.7\\
+			\hline
+			1801 & 225.5\\
+			\hline
+			1793 & 224.6\\
+			\hline
+			1805 & 225.9\\
+			\hline
+		\end{tabu}
+		\caption{225 $10^{-1}$mm Work Piece}
+		\label{tab:225workpiece}
+	\end{center}
+\end{table}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\begin{table}[H]
+	\begin{center}
+		\begin{tabu} spread \linewidth {c | c}
+			\textbf{Value} & \textbf{Computed height [ $10^{-1}$mm]} \\
+			\hline
+			\hline
+			2253 & 274.8\\
+			\hline
+			2258 & 275.3\\
+			\hline
+			2256 & 275.1\\
+			\hline
+			2250 & 274.5\\
+			\hline
+			2255 & 275.0\\
+			\hline
+		\end{tabu}
+		\caption{275 $10^{-1}$mm Work Piece}
+		\label{tab:275workpiece}
+	\end{center}
+\end{table}
+\end{minipage}
