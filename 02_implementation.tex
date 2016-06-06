@@ -67,7 +67,7 @@ A special case is the \texttt{CALIBRATE\_SENSOR} state. After each iteration of 
 
 The device driver library (\texttt{driverLib.h}) is providing high level functions to access the sensors and actuators of the Festo testing station. 
 It uses functions of the \texttt{qut\_tiva.h}-file for pin access to the station. 
-Therefore the \texttt{qut\_set\_gpio()}-function is used to change the output pins that are attached to the actuators of the station. The states of the sensors are read using the \texttt{qut\_get\_gpio()}-function. In order to get the value of the analogue height sensor a Analogue-to-Digital Converter (ADC) is used. It gets initialized by \texttt{QUT\_ADC0\_Init()} and afterwards the raw value of the sensor can be read and converted by the ADC through the \texttt{QUT\_ADC0\_Read()}-function. 
+Therefore the \texttt{qut\_set\_gpio()}-function is used to change the output pins that are attached to the actuators of the station. The states of the sensors are read using the \texttt{qut\_get\_gpio()}-function. In order to get the value of the analogue height sensor a ADC\footnote{Analogue-to-Digital Converter} is used. It gets initialized by \texttt{QUT\_ADC0\_Init()} and afterwards the raw value of the sensor can be read and converted by the ADC through the \texttt{QUT\_ADC0\_Read()}-function. 
 
 In the \texttt{driverLib.h}-file a \texttt{ColorMaterial} struct is introduced that consists of two bool-values for the attribute \glq metallic\grq and \glq black\grq. This stuct is filled with the current data of the sensors and returned by the \texttt{getMaterial()}-function of the library.\\
 
@@ -97,8 +97,8 @@ First it will be checked, if the platform is already in the desired position. In
 The next step is to check if the safety barrier is clear. If this is not the case it will be waited until it is clear. Therefore the task will sleep for a certain moment to give computation to the other running tasks and stay in a while loop. This check can be bypassed if the secure movement option is disabled by the parameter. That is useful when the \texttt{initStation()}-function is called, because the platform itself might be in between the safety barrier and it would get stuck in the while loop since the safety barrier will never be clear.
 Afterwards the movement of the platform is started. Therefore the pin for the valve to perform the correct movement is set to 1. 
 Afterwards the function will enter into a while-loop. If the movement gets disabled while this function is waiting for the platform to reach the new position \texttt{false} will be returned since the platform will not move any further if the movement is disabled. In every iteration of the loop it will be checked if the event that is specified for reaching the movement is posted or not. If it was posted \texttt{true} will be returned. Otherwise the task will sleep for a certain moment before performing the next iteration.\\
-When the platform finally reaches the raised or the lowered position a hardware interrupt will be triggered by the GPIO that is specified for the corresponding pin. %TODO: Maybe add a reference to the documents from the bibliography and add it into the table.
-In the ISR the movement of the station will be stopped immediately and the event that the movement is finished will be posted. The stopping of the movement is a time critical action and therefore has to be performed in the ISR. 
+When the platform finally reaches the raised or the lowered position a hardware interrupt will be triggered by the GPIO\footnote{General-Purpose Input/Output} that is specified for the corresponding pin. 
+In the ISR\footnote{Interrupt Service Routine} the movement of the station will be stopped immediately and the event that the movement is finished will be posted. The stopping of the movement is a time critical action and therefore has to be performed in the ISR. 
 
 
 \begin{figure}[H]
@@ -108,9 +108,6 @@ In the ISR the movement of the station will be stopped immediately and the event
 		\label{fig:moveplatform}
 	\end{center}
 \end{figure}
-
-
-% TODO: Table of measurements?
 
 \section{User Interface} \label{sec:ui}%TODO: Pixel-Julian
 
