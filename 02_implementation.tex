@@ -9,7 +9,7 @@
 * Did you use TI-RTOS? How?\\
 %TODO: Please add some references to the documents from the bibliography and add them in the table there as well.
 
-\section{State Machine} %TODO: Hendrik
+\section{State Machine} \label{sec:statemachine}%TODO: Hendrik
 To control the program flow, state machines are a suitable approach for real-time software (Lecture 2). They allow design for multi-threaded software and real-time events can be used to cause state changes. By implementing the state machine in one task, concurrency with other parts of the software is no problem because the state machine task can sleep between iterations and change its state based on events or the result values of methods called from inside the states. Even though they can not depict time constraints in every case. Tasks which are time critical should not be implemented or called inside a specific state to ensure real-time responses.
 
 The state machine (see Fig.\ref{fig:statemachine}) is executed in an own task inside an infinite while loop with a sleep of 10 ticks between each iteration. The execution starts in the \texttt{INIT} state. There the related method from the driver library is called to set up and initialize data structures. If the method return true as an indication that it was successful, the current state is changed to \texttt{INIT\_STATION}. Again the related function from the driver library is called, this time to ensure that the platform is in its initial position and the ejector is retracted. The functions in the driver library are all implemented as blocking functions with a return value to indicate their success in execution. After successfully returning from the method call, the state will be changed to the \texttt{CHECK\_WORKPIECE} state. In this state it will only be checked if a work piece was placed in the designated position on the platform. The switching to the next state will only be executed, if the return value indicated an available work piece.
@@ -27,9 +27,7 @@ A special case is the \texttt{CALIBRATE\_SENSOR} state. After each iteration of 
 	\end{center}
 \end{figure}
 
-\section{Calibration} %TODO: Hendrik
-
-\section{Device Driver Library} %TODO: Timo
+\section{Device Driver Library} \label{sec:driverlibrary} %TODO: Timo
 %* Did you use the GPIO module? How? Through the qut library... Pin Map table?\\
 %* Did you use the ADC? How? 
 
@@ -42,7 +40,7 @@ Therefore the \texttt{qut\_set\_gpio()}-function is used to change the output pi
 
 In the \texttt{driverLib.h}-file a \texttt{ColorMaterial} struct is introduced that consists of two bool-values for the attribute \glq metallic\grq and \glq black\grq. This stuct is filled with the current data of the sensors and returned by the \texttt{getMaterial()}-function of the library.\\
 
-The library holds a bool value that is \texttt{true} as long as the movement is enabled. If this value is set to \texttt{false} the call of every function that controls one of the actuators will not perform and therefore return false since the aim cannot be reached. The value can be changed by the user or in some stages of the state machine. 
+The library holds a bool value that is \texttt{true} as long as the movement is enabled. If this value is set to \texttt{false} the call of every function that controls one of the actuators will not perform and therefore return false since the aim cannot be reached. The value can be changed by the user or in some stages of the state machine (See Sec. \ref{sec:statemachine}). 
 The function set provided by the library and their behaviours are described in the following: 
 
 \begin{description} 
@@ -56,7 +54,7 @@ The function set provided by the library and their behaviours are described in t
 	\item[senseWorkpiece()] Returns if there is current a workpiece in the platform or not.
 	\item[senseSafetyBarrierClear()] Returns if the safety barrier is clear or if something is in between it.
 	\item[getRawWorkpieceHeight()] Returns the raw value of the ADC that is attached to the height sensor of the station. 
-	\item[getWorkpieceHeight(float slope, float offset)] Returns the height of the current workpiece in $10^{-1}$mm based on the given slope, offset and the raw value of the ADC.
+	\item[getWorkpieceHeight(float slope, float intersect)] Returns the height of the current workpiece in $10^{-1}$mm based on the given slope, y-intersect and the raw value of the ADC.
 	\item[getMaterial()] Returns a \texttt{ColorMaterial}-struct that includes the current measurement of the color and the metallic value of the workpiece.
 \end{description}
 
@@ -68,14 +66,14 @@ First it will be checked, if the platform is already in the desired position. In
 The next step is to check if the safety barrier is clear. If this is not the case it will be waited until it is clear. Therefore the task will sleep for a certain moment to give computation to the other running tasks and stay in a while loop. This check can be bypassed if the secure movement option is disabled by the parameter. That is useful when the \texttt{initStation()}-function is called, because the platform itself might be in between the safety barrier and it would get stuck in the while loop since the safety barrier will never be clear.
 Afterwards the movement of the platform is started. Therefore the pin for the valve to perform the correct movement is set to 1. 
 Afterwards the function will enter into a while-loop. If the movement gets disabled while this function is waiting for the platform to reach the new position \texttt{false} will be returned since the platform will not move any further if the movement is disabled. In every iteration of the loop it will be checked if the event that is specified for reaching the movement is posted or not. If it was posted \texttt{true} will be returned. Otherwise the task will sleep for a certain moment before performing the next iteration.\\
-When the platform finally reaches the raised or the lowered position a hardware interrupt will be triggered by the GPIO that is specified for the corresponding pin.%TODO: Maybe add a reference to the documents from the bibliography and add it into the table.
- In the ISR the movement of the station will be stopped immediately and the event that the movement is finished will be posted. The stopping of the movement is a time critical action and therefore has to be performed in the ISR. 
+When the platform finally reaches the raised or the lowered position a hardware interrupt will be triggered by the GPIO that is specified for the corresponding pin. %TODO: Maybe add a reference to the documents from the bibliography and add it into the table.
+In the ISR the movement of the station will be stopped immediately and the event that the movement is finished will be posted. The stopping of the movement is a time critical action and therefore has to be performed in the ISR. 
 
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=0.6\textwidth]{media/Flow_Chart_MovePlatform.pdf} 	
-		\caption{Flowchart Move Platform}
+		\includegraphics[width=0.8\textwidth]{media/Flow_Chart_MovePlatform.pdf} 	
+		\caption{Flowchart - Move Platform}
 		\label{fig:moveplatform}
 	\end{center}
 \end{figure}
@@ -83,7 +81,7 @@ When the platform finally reaches the raised or the lowered position a hardware 
 
 % TODO: Table of measurements?
 
-\section{User Interface} %TODO: Pixel-Julian
+\section{User Interface} \label{sec:userinterface} %TODO: Pixel-Julian
 
 In order to transfer data from the state machine to the display logic, a C struct called \texttt{festoData} is introduced. All the data that is needed to display is represented in that struct. Its internal representation is shown in listing \ref{struct}. Apart from the values of the current and the operating time, it includes the actual state of the screen as well as the measurements that are received during the automated processing of workpieces.
 
@@ -163,4 +161,39 @@ At first the screen is cleared by painting a rectangle with the color of the bac
 Afterwards a distinction of cases decides which screen is to be drawn.
 With help of the functions \texttt{GrStringDraw} and \texttt{GrStringDrawCentered}  by the \textit{TivaWare™ Graphics Library} the strings will then be printed at the appropriate coordinates. 
 Additionally the rectangles are drawn with the help of the \texttt{GrRectDraw} function.
+
 %TODO: If possible please refer to the documents from the bibliography and add some section and keywords to the table.
+
+\section{Calibration} %TODO: Timo
+
+% Calibration necessary because values might change due to little changes of station
+% Using two work pieces with specified height 
+% Linear function (slope & y-intercept)
+% ui workflow (up down to set height - select to measure)
+
+% measured data 
+
+The resistance probe of the testing station is providing a analogue output value. This output value gets converted by the ADC to a \textit{uint32\_t}-value. This value is proportional to the height of a work piece. 
+It is necessary to determine the linear function that is describing the proportion between the measured value and the actual height of a work piece. Therefore a calibration routine is used.
+
+The calibration gets triggered by a button press of the user in the corresponding view (See Sec. \ref{sec:userinterface}). The first thing to happen is that the state machine will jump into the \texttt{CALIBRATE\_SENSOR}-state after the event of the pressed button is received and will start the calibration routine (See Sec. \ref{sec:statemachine}). 
+
+The procedure of this routine will be described in the following and is visualized in figure \ref{fig:calibration}: 
+The platform will be moved to the lowered position. Afterwards it will be checked if the event was posted that indicates that the apply-button was pressed. In the meantime user is entering the actual height of the first work piece that is used for calibration and puts it onto the platform of the station. To trigger the measuring of the first piece the apply-button gets pressed that results in the posting of the corresponding event and to save the value (in $10^{-1}$mm) as \texttt{calibrateFirst} in the \texttt{festoData struct} (See. Sec. \ref{sec:userinterface}). 
+After the event was detected the platform is moved to the raised position and the work piece gets measured and the value gets saved for later calculation.
+The whole procedure gets repeated for the second work piece. \\
+Once both work pieces were measured the slope and the y-intercept of the height function gets computed. Therefore it will be figured out which of the two entered work pieces is the taller one and then the following formulas are used:
+\[slope = \frac{taller_{ref} - smaller_{ref}}{taller - smaller}\]
+\[y\text{-}intercept = smaller_{ref} - (slope * smaller)\]
+With the slope and y-intercept the actual height of work pieces can be computed in $10^{-1}$mm. This is done by the \texttt{getWorkpieceHeight(..)} of the driver library by entering the digital height sensor value in the formula (See. Sec. \ref{sec:driverlibrary}):
+\[height = value * slope + y\text{-}intercept\]
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{media/Flow_Chart_Calibration.pdf} 	
+		\caption{Flowchart - Height Sensor Calibration}
+		\label{fig:calibration}
+	\end{center}
+\end{figure}
+
+In addition to this a series of data was recorded to determine how precise the height sensor is and how accurate the output of the function is. 
