@@ -1,11 +1,24 @@
-\chapter{Results}
+\chapter{Results} \label{ch:results}%(2 pages)\\
 
-(2 pages)\\
-* summary of evidence of functional requirements that were demonstrated and explanation of failures as learning outcomes in terms of what could have been done differently
+The project was successfully realised and all functional requirements were implemented and are working during operation:
 
-Consistency in code structure like communication and event polling.
-Flickering of the LCD.
-Maybe use touch screen interaction instead of hardware buttons.
-Safety options for adding a work piece.
+\begin{list}{\makebox[0pt][l]{$\square$}\raisebox{.15ex}{\hspace{0.1em}$\checkmark$}}
+	\item The station works in a fully automated mode to test the inserted work pieces and accepts or rejects them based on their height measurements.
+	\item %dirty hack, but somehow it does not work without
+	\item The testing process can be started or stopped by the hardware buttons on the development board.
+	\item The screen in the development board displays all required information for the current work piece and an overview over the whole test period.
+	\item The application also allows the operator to use a calibration procedure in which he will be guided by the user interface.
+	\item The thresholds for accepted work pieces can be adjusted in the user interface.
+	\item The LED on the development board shows the current status or the station (active = green / stopped = red).
+	\item The current calendar time is displayed and updated periodically.
+	\item The automation process calls all functions from the self-developed device driver library and does not call any lower level functions for pin access.
+\end{list}
 
+In hindsight a few things could have been implemented differently to have a better code quality and more consistency overall. For example sometimes boolean variables are used in the code and at other places the same behaviour is implemented based on an event polling mechanism. 
+
+Currently only the hardware interrupt of the platform sensors (up and down position) are causing a direct reaction in the program. The same handling might as well be implemented for the hardware button which starts or stops the station. In case the stopping is seen as an emergency stop, the reaction should be as a real-time requirement and not only if the related task is scheduled the next time. 
+
+For a better user experience in operating the station the graphical interface can be advanced and it may be evaluated if touch screen interactions are preferred by users instead of the handling with the hardware buttons. Another thing that should be advanced is the flickering of the LCD which is due to the clearing of the entire screen when updating the informations on it. Double buffering techniques could be used like mentioned in section 3.1 of \cite{Wilson:2013}.
+
+During operations we noticed that the safety barrier does not provide enough safety for the operator. The problem is that is has to be ignored as soon as the platform should move up, since during movement it also activates the safety barrier and would stop the movement which is not wanted. As a solution a delay can be inserted after a work piece is sensed and the platform is only moved after the time of the delay has passed. On the other hand this would decrease the possible throughput which would be a negative aspect if one would think of using the testing station for real-world scenarios in industry.
 
