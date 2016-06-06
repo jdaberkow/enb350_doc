@@ -35,8 +35,8 @@ The majority of the computation in a real-time system should be done in tasks.
 In contrast to the interrupts they always allow for dynamic preemption and thereby ensure that the system can react faster to more important incidents.
 In order to achieve a certain level of modularity we introduce three different tasks.
 The ButtonHandler is waiting for events that are posted by the ButtonHWI.
-It then reacts to the pressed button depending of the current screenState by modifying certain values in the festoData struct (see chapter \ref{sec:ui}) and will then itself post additional events that may effect the stateMachineHandler or the updateScreenHandler.
-The stateMachineHandler is containing the main logic of the program and will be described in detail in chapter \ref{ch:stateMachine}.
+It then reacts to the pressed button depending of the current screenState by modifying certain values in the \texttt{festoData} struct (see chapter \ref{sec:ui}) and will then itself post additional events that may effect the StateMachineHandler or the updateScreenHandler.
+The StateMachineHandler is containing the main logic of the program and will be described in detail in chapter \ref{ch:stateMachine}.
 It is also able to post events that will effect the updateScreenHandler, which will be further explained in chapter \ref{sec:ui}.
 
 
