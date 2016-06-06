@@ -1,15 +1,45 @@
 \chapter{Design and Implementation} %(approx. 10 pages)\\
 
-\section{Program Design and Interaction Mechanisms} %TODO: Julian
-* Approach to design\\
-* important issues and choices and their relationships to theoretical concepts and the hardware and software platforms\\
-* Did you use the GPIO module? How? In terms of interrupts and the setup in the main\\
-* Did you use interrupts? How?\\ 
-* Did you use multiple threads / handlers? How? Why?\\
-* Did you use TI-RTOS? How?\\
-%TODO: Please add some references to the documents from the bibliography and add them in the table there as well.
+In order for the testing station to act in a real-time manner, we chose to make use of several utilities provided by the TI-RTOS, which is a real-time operating system, developed by Texas Instruments.
 
-\section{State Machine} %TODO: Hendrik
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{media/RTOS.pdf} 	
+		\caption{Usage of RTOS mechanics}
+		\label{fig:rtos}
+	\end{center}
+\end{figure}
+
+Figure \ref{fig:rtos} visualises our approach and what kind of HWIs\footnote{Hardware Interrupt}, SWIs\footnote{Software Interrupt} and Tasks we introduced.
+The arrows display how the different elements are interacting with each other.
+Each arrow symbolises one or several events that are posted to inform a specific task about a certain incident.
+
+One of the HWIs we introduce is the ButtonHWI.
+This interrupt occurs whenever one of the three buttons next to the screen is pressed.
+Each button belongs to its own specific Event ID, which will then be interpreted by the ButtonHandler.
+
+The second HWI that is a crucial component in terms of reacting to time critical events is the PlatformHWI.
+The Lifting Module of the Festo Station is equipped with two sensors, that signal whether the platform is in the correct up or down position, or somewhere else.
+That leads to the fact that whenever the platform is raised or lowered, there is only a short amount of time in which the sensor is active.
+If the platform misses that specific point, the chance is high that its position already passed the point where the station can operate safely.
+Even worse the platform can end up in an undefined state.
+Because of that it is important that the system reacts to the sensor as soon as possible by stopping any movement of the platform inside of the HWI itself.
+The corresponding event to the StateMachineHandler is then send afterwards.
+
+In terms of Software Interrupts we are introducing the PeriodicSWI.
+This interrupt will be called once every second and then sends an event afterwards to the updateScreenHandler.
+This ensures that the screen will receive an update at least once per second in order to keep the displayed clock and running time up-to-date.
+
+The majority of the computation in a real-time system should be done in tasks.
+In contrast to the interrupts they always allow for dynamic preemption and thereby ensure that the system can react faster to more important incidents.
+In order to achieve a certain level of modularity we introduce three different tasks.
+The ButtonHandler is waiting for events that are posted by the ButtonHWI.
+It then reacts to the pressed button depending of the current screenState by modifying certain values in the festoData struct (see chapter \ref{sec:ui}) and will then itself post additional events that may effect the stateMachineHandler or the updateScreenHandler.
+The stateMachineHandler is containing the main logic of the program and will be described in detail in chapter \ref{ch:stateMachine}.
+It is also able to post events that will effect the updateScreenHandler, which will be further explained in chapter \ref{sec:ui}.
+
+
+\section{State Machine} \label{ch:stateMachine}%TODO: Hendrik
 To control the program flow, state machines are a suitable approach for real-time software (Lecture 2). They allow design for multi-threaded software and real-time events can be used to cause state changes. By implementing the state machine in one task, concurrency with other parts of the software is no problem because the state machine task can sleep between iterations and change its state based on events or the result values of methods called from inside the states. Even though they can not depict time constraints in every case. Tasks which are time critical should not be implemented or called inside a specific state to ensure real-time responses.
 
 The state machine (see Fig.\ref{fig:statemachine}) is executed in an own task inside an infinite while loop with a sleep of 10 ticks between each iteration. The execution starts in the \texttt{INIT} state. There the related method from the driver library is called to set up and initialize data structures. If the method return true as an indication that it was successful, the current state is changed to \texttt{INIT\_STATION}. Again the related function from the driver library is called, this time to ensure that the platform is in its initial position and the ejector is retracted. The functions in the driver library are all implemented as blocking functions with a return value to indicate their success in execution. After successfully returning from the method call, the state will be changed to the \texttt{CHECK\_WORKPIECE} state. In this state it will only be checked if a work piece was placed in the designated position on the platform. The switching to the next state will only be executed, if the return value indicated an available work piece.
@@ -83,7 +113,7 @@ When the platform finally reaches the raised or the lowered position a hardware 
 
 % TODO: Table of measurements?
 
-\section{User Interface} %TODO: Pixel-Julian
+\section{User Interface} \label{sec:ui}%TODO: Pixel-Julian
 
 In order to transfer data from the state machine to the display logic, a C struct called \texttt{festoData} is introduced. All the data that is needed to display is represented in that struct. Its internal representation is shown in listing \ref{struct}. Apart from the values of the current and the operating time, it includes the actual state of the screen as well as the measurements that are received during the automated processing of workpieces.
 
@@ -146,8 +176,7 @@ There are three different screen states while each one of them is allowing the u
 The first display state shown in figure \ref{fig:guiStatus} is the status screen.
 It shows all the values of the last measured workpiece and furthermore a summary of all the measured workpieces in total.
 In addition, the total runtime and the current flow-rate are displayed.
-While this screen is active, the two buttons on the left allow for %TODO: delete for?
- switching into another screen state, while the button on the right starts and stops the automation process of the measuring. %TODO: I would write testing instead of measuring
+While this screen is active, the two buttons on the left allow for switching into another screen state, while the button on the right starts and stops the automated process of testing.
 
 When the user goes into the calibration mode, the current values and the summary disappear and he is then asked to enter the height for the workpieces that will be used for calibration, as shown in figure \ref{fig:guiCalibrate}.
 In this screen the buttons on the left are either used to switch again into another screen state or to adjust the calibration values.
