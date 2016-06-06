@@ -65,11 +65,17 @@
 \include{00_title}
 \tableofcontents
 \listoffigures
+\begingroup
+\let\clearpage\relax
 \listoftables
+\endgroup
 \include{01_introduction}
 \include{02_implementation}
 \include{03_results}
 \appendix
+\begingroup
+\let\clearpage\relax
 \include{A1_references}
 \include{A2_appendix}
+\endgroup
 \end{document}
